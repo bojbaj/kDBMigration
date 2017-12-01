@@ -159,6 +159,7 @@ namespace kDbRepair
 
         private void btnSelectFile_Click(object sender, EventArgs e)
         {
+            picOk.Visible = picError.Visible = false;
             DialogResult result = openFileDialog1.ShowDialog();
             if (result == DialogResult.OK)
             {
@@ -174,13 +175,14 @@ namespace kDbRepair
                         return;
                     }
                     projectId = firstQuery.tProjectId;
-                    MessageBox.Show("File is valid");
+                    picOk.Visible = true;
                 }
                 catch
                 {
                     migrationFilePath = string.Empty;
                     projectId = 0;
-                    MessageBox.Show("File is not valid!", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    picError.Visible = true;
+                    MessageBox.Show("File is not valid!\r\nCan't read kDbMigration formatted data", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
