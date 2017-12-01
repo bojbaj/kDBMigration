@@ -32,18 +32,18 @@
             this.cbAuthType = new System.Windows.Forms.ComboBox();
             this.btnUpgrade = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtServer = new System.Windows.Forms.TextBox();
             this.txtUserId = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.txtDatabase = new System.Windows.Forms.TextBox();
             this.progressBarUpgrade = new System.Windows.Forms.ProgressBar();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.btnSelectFile = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
+            this.cbServer = new System.Windows.Forms.ComboBox();
+            this.cbDatabase = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // cbAuthType
@@ -74,13 +74,6 @@
             this.label1.Size = new System.Drawing.Size(60, 19);
             this.label1.TabIndex = 3;
             this.label1.Text = "Server:";
-            // 
-            // txtServer
-            // 
-            this.txtServer.Location = new System.Drawing.Point(16, 31);
-            this.txtServer.Name = "txtServer";
-            this.txtServer.Size = new System.Drawing.Size(214, 27);
-            this.txtServer.TabIndex = 4;
             // 
             // txtUserId
             // 
@@ -133,13 +126,6 @@
             this.label5.TabIndex = 11;
             this.label5.Text = "Database:";
             // 
-            // txtDatabase
-            // 
-            this.txtDatabase.Location = new System.Drawing.Point(16, 92);
-            this.txtDatabase.Name = "txtDatabase";
-            this.txtDatabase.Size = new System.Drawing.Size(214, 27);
-            this.txtDatabase.TabIndex = 10;
-            // 
             // progressBarUpgrade
             // 
             this.progressBarUpgrade.Location = new System.Drawing.Point(16, 203);
@@ -172,22 +158,40 @@
             this.label6.TabIndex = 14;
             this.label6.Text = "Migration File:";
             // 
+            // cbServer
+            // 
+            this.cbServer.FormattingEnabled = true;
+            this.cbServer.Location = new System.Drawing.Point(16, 31);
+            this.cbServer.Name = "cbServer";
+            this.cbServer.Size = new System.Drawing.Size(214, 27);
+            this.cbServer.TabIndex = 15;
+            this.cbServer.SelectedIndexChanged += new System.EventHandler(this.cbServer_SelectedIndexChanged);
+            // 
+            // cbDatabase
+            // 
+            this.cbDatabase.FormattingEnabled = true;
+            this.cbDatabase.Location = new System.Drawing.Point(16, 92);
+            this.cbDatabase.Name = "cbDatabase";
+            this.cbDatabase.Size = new System.Drawing.Size(214, 27);
+            this.cbDatabase.TabIndex = 16;
+            this.cbDatabase.SelectedIndexChanged += new System.EventHandler(this.cbDatabase_SelectedIndexChanged);
+            // 
             // frmUpgrade
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(464, 299);
+            this.Controls.Add(this.cbDatabase);
+            this.Controls.Add(this.cbServer);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.btnSelectFile);
             this.Controls.Add(this.progressBarUpgrade);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.txtDatabase);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.txtPassword);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.txtUserId);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.txtServer);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnUpgrade);
             this.Controls.Add(this.cbAuthType);
@@ -199,7 +203,7 @@
             this.Name = "frmUpgrade";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Upgrade Database";
-            this.Load += new System.EventHandler(this.frmNewProject_Load);
+            this.Load += new System.EventHandler(this.frmUpgrade_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -209,18 +213,18 @@
         private System.Windows.Forms.ComboBox cbAuthType;
         private System.Windows.Forms.Button btnUpgrade;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtServer;
         private System.Windows.Forms.TextBox txtUserId;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox txtDatabase;
         private System.Windows.Forms.ProgressBar progressBarUpgrade;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button btnSelectFile;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox cbServer;
+        private System.Windows.Forms.ComboBox cbDatabase;
     }
 }
 

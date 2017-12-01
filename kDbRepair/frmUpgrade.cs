@@ -18,12 +18,18 @@ namespace kDbRepair
     {
         public int projectId { get; set; }
         public string migrationFilePath { get; set; }
+        private string connectionFilePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Application.ExecutablePath), "connections.json");
         public frmUpgrade()
         {
             InitializeComponent();
         }
 
-        private void frmNewProject_Load(object sender, EventArgs e)
+        private void frmUpgrade_Load(object sender, EventArgs e)
+        {
+            fillFormData();
+        }
+
+        private async void fillFormData()
         {
             cbAuthType.DataSource = new List<tAuthType>()
             {
@@ -40,8 +46,19 @@ namespace kDbRepair
             };
             cbAuthType.DisplayMember = "Text";
             cbAuthType.ValueMember = "Id";
-        }
 
+            JsonConfig config = new JsonConfig(connectionFilePath);
+            AutoCompleteStringCollection autoComplete = new AutoCompleteStringCollection();
+            List<configServer> connections = await config.getServers();
+            if (connections == null)
+                return;
+
+            autoComplete.AddRange(connections.Select(x => x.server).ToArray());
+            cbServer.AutoCompleteCustomSource = autoComplete;
+            cbServer.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            cbServer.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            cbServer.DataSource = connections.Select(x => x.server).ToList();
+        }
         private void cbAuthType_SelectedIndexChanged(object sender, EventArgs e)
         {
             tAuthType item = (tAuthType)cbAuthType.SelectedItem;
@@ -60,10 +77,10 @@ namespace kDbRepair
         private void btnUpgrade_Click(object sender, EventArgs e)
         {
             tAuthType item = (tAuthType)cbAuthType.SelectedItem;
-            string server = txtServer.Text.Trim();
+            string server = cbServer.Text.Trim();
             string userId = txtUserId.Text.Trim();
             string password = txtPassword.Text.Trim();
-            string dbName = txtDatabase.Text.Trim();
+            string dbName = cbDatabase.Text.Trim();
             byte authType = item.Id;
             if (string.IsNullOrEmpty(migrationFilePath))
             {
@@ -85,12 +102,16 @@ namespace kDbRepair
                 OleDbConnection connection = dbFactoryStatic.connectionMaker(migrationFilePath);
                 dbFactory db = new dbFactory(connection);
 
-                SqlConnection targetConnection = dbFactoryStatic.connectionMaker(txtServer.Text, item.Id, txtUserId.Text, txtPassword.Text, txtDatabase.Text);
+                SqlConnection targetConnection = dbFactoryStatic.connectionMaker(server, authType, userId, password, dbName);
                 dbFactory dbTarget = new dbFactory(targetConnection);
                 dbTarget.initialDb(projectId);
-                tSQLSVNVersion version = dbTarget.Get<tSQLSVNVersion>(projectId);         
-                
+                tSQLSVNVersion version = dbTarget.Get<tSQLSVNVersion>(projectId);
+
                 List<tScript> scripts = db.GetAll<tScript>().Where(x => x.tProjectId == projectId && x.scriptId > version.VerNumber).OrderBy(x => x.scriptId).ToList();
+
+                JsonConfig configFile = new JsonConfig(connectionFilePath);
+                configFile.save(server, dbName, authType, userId, password);
+
                 if (scripts.Count == 0)
                 {
                     MessageBox.Show(string.Format("Your database is latest version. version : {0}", version.VerNumber));
@@ -162,6 +183,52 @@ namespace kDbRepair
                     MessageBox.Show("File is not valid!", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private async void cbServer_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string serverName = cbServer.Text;
+            if (string.IsNullOrEmpty(serverName))
+                return;
+
+            JsonConfig configFile = new JsonConfig(connectionFilePath);
+            List<configServer> connections = await configFile.getServers();
+            List<configConnection> configs = connections?.FirstOrDefault(x => x.server == serverName)?.configs;
+            configConnection connectionInfo = configs?.FirstOrDefault();
+            if (connectionInfo == null)
+                return;
+
+            cbAuthType.SelectedValue = connectionInfo.authType;
+            txtUserId.Text = connectionInfo.userId;
+            txtPassword.Text = connectionInfo.password;
+
+            cbDatabase.DataSource = configs;
+            cbDatabase.DisplayMember = "dbName";
+            cbDatabase.ValueMember = "dbName";
+
+            cbDatabase.Text = connectionInfo.dbName;
+        }
+
+        private async void cbDatabase_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string serverName = cbServer.Text;
+            if (string.IsNullOrEmpty(serverName))
+                return;
+
+            string dbName = cbDatabase.Text;
+            if (string.IsNullOrEmpty(dbName))
+                return;
+
+            JsonConfig configFile = new JsonConfig(connectionFilePath);
+            List<configServer> connections = await configFile.getServers();
+            List<configConnection> configs = connections?.FirstOrDefault(x => x.server == serverName)?.configs;
+            configConnection connectionInfo = configs?.FirstOrDefault(x => x.dbName == dbName);
+            if (connectionInfo == null)
+                return;
+
+            cbAuthType.SelectedValue = connectionInfo.authType;
+            txtUserId.Text = connectionInfo.userId;
+            txtPassword.Text = connectionInfo.password;
         }
     }
 }
