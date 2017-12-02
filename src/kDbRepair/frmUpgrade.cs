@@ -16,7 +16,7 @@ namespace kDbRepair
 {
     public partial class frmUpgrade : Form
     {
-        public int projectId { get; set; }
+        public Guid projectCode { get; set; }
         public string migrationFilePath { get; set; }
         private string connectionFilePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Application.ExecutablePath), "connections.json");
         public frmUpgrade()
@@ -104,10 +104,10 @@ namespace kDbRepair
 
                 SqlConnection targetConnection = dbFactoryStatic.connectionMaker(server, authType, userId, password, dbName);
                 dbFactory dbTarget = new dbFactory(targetConnection);
-                dbTarget.initialDb(projectId);
-                tSQLSVNVersion version = dbTarget.Get<tSQLSVNVersion>(projectId);
+                dbTarget.initialDb(projectCode);
+                tSQLSVNVersion version = dbTarget.Get<tSQLSVNVersion>(projectCode);
 
-                List<tScript> scripts = db.GetAll<tScript>().Where(x => x.tProjectId == projectId && x.scriptId > version.VerNumber).OrderBy(x => x.scriptId).ToList();
+                List<tScript> scripts = db.GetAll<tScript>().Where(x => x.tProjectCode == projectCode && x.scriptId > version.VerNumber).OrderBy(x => x.scriptId).ToList();
 
                 JsonConfig configFile = new JsonConfig(connectionFilePath);
                 configFile.save(server, dbName, authType, userId, password);
@@ -174,13 +174,13 @@ namespace kDbRepair
                         MessageBox.Show("File is empty!", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
-                    projectId = firstQuery.tProjectId;
+                    projectCode = firstQuery.tProjectCode;
                     picOk.Visible = true;
                 }
                 catch
                 {
                     migrationFilePath = string.Empty;
-                    projectId = 0;
+                    projectCode = Guid.Empty;
                     picError.Visible = true;
                     MessageBox.Show("File is not valid!\r\nCan't read kDbMigration formatted data", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }

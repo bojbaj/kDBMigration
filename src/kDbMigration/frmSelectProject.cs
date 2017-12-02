@@ -15,7 +15,7 @@ namespace kDbMigration
     public partial class frmSelectProject : Form
     {
         dbFactory db = new dbFactory();
-        public int projectId { get; set; }
+        public Guid projectCode { get; set; }
         public frmSelectProject()
         {
             InitializeComponent();
@@ -27,16 +27,16 @@ namespace kDbMigration
         }
         private void bindProjects()
         {
-            IEnumerable<tProject> projects = db.GetAll<tProject>().OrderByDescending(x => x.Id).ToList();
+            IEnumerable<tProject> projects = db.GetAll<tProject>().OrderByDescending(x => x.ProjectName).ToList();
             cbProject.DataSource = projects;
-            cbProject.ValueMember = "Id";
+            cbProject.ValueMember = "Code";
             cbProject.DisplayMember = "ProjectName";
         }
 
         private void btnProject_Click(object sender, EventArgs e)
         {
-            projectId = cbProject.SelectedValue.ToType<int>(0);
-            if (projectId == 0)
+            projectCode = cbProject.SelectedValue.ToType<Guid>(Guid.Empty);
+            if (projectCode == Guid.Empty)
             {
                 MessageBox.Show("please select a project or create a new one");
                 return;

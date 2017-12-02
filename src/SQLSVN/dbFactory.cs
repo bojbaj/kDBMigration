@@ -16,7 +16,7 @@ namespace SQLSVN
 {
     public class dbFactory
     {
-        private const string DB_NAME = "tSQLSVN_Version";
+        private const string TABLE_NAME = "tSQLSVN_Version";
         private readonly string connectionString = string.Empty;
         private readonly IDbConnection connection;
         private IDbTransaction transaction = null;
@@ -34,7 +34,8 @@ namespace SQLSVN
         {
             return connection.Execute(sql, transaction: transaction);
         }
-        public T Get<T>(int Id) where T : class
+
+        public T Get<T>(object Id) where T : class
         {
             return connection.Get<T>(Id, transaction: transaction);
         }
@@ -83,20 +84,20 @@ namespace SQLSVN
             string sql = string.Empty;
             sql += "IF NOT EXISTS ( SELECT * FROM sysobjects WHERE name = '{0}' and xtype = 'U' )\n";
             sql += "BEGIN\n";
-            sql += "CREATE TABLE [dbo].{0}(Id int NOT NULL, verNumber INT NOT NULL)\n";
+            sql += "CREATE TABLE [dbo].{0}(Code uniqueidentifier NOT NULL, verNumber INT NOT NULL)\n";
             sql += "END\n";
-            sql = string.Format(sql, DB_NAME);
+            sql = string.Format(sql, TABLE_NAME);
             return sql;
         }
-        public void initialDb(int projectId)
+        public void initialDb(Guid projectCode)
         {
             string sql = string.Empty;            
             sql += initialDb();
-            sql += "IF NOT EXISTS ( SELECT * FROM {0} WHERE Id = {1} )\n";
+            sql += "IF NOT EXISTS ( SELECT * FROM {0} WHERE Code = '{1}' )\n";
             sql += "BEGIN\n";
-            sql += "INSERT INTO {0}(Id, verNumber) VALUES({1}, 0)\n";
+            sql += "INSERT INTO {0}(Code, verNumber) VALUES('{1}', 0)\n";
             sql += "END\n";
-            sql = string.Format(sql, DB_NAME, projectId);
+            sql = string.Format(sql, TABLE_NAME, projectCode);
             Execute(sql);
         }
 
@@ -110,7 +111,7 @@ namespace SQLSVN
             createTableScript += "CREATE TABLE [tScript](\n";
             createTableScript += "[scriptId] INT NOT NULL,\n";
             createTableScript += "[sql] MEMO NOT NULL,\n";
-            createTableScript += "[tProjectId] int NOT NULL\n";
+            createTableScript += "[tProjectCode] guid NOT NULL\n";
             createTableScript += ");\n";
             Catalog cat = new Catalog();
             try

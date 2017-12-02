@@ -15,7 +15,8 @@ namespace dbModels
     [Table("tProject")]
     public class tProject
     {
-        public int Id { get; set; }
+        [Key]
+        public Guid Code { get; set; }
         public string ProjectName { get; set; }
     }
     [Table("tScript")]
@@ -23,13 +24,14 @@ namespace dbModels
     {
         public int Id { get; set; }
         public int scriptId { get; set; }        
-        public int tProjectId { get; set; }        
+        public Guid tProjectCode { get; set; }        
         public string sql { get; set; }
     }
     [Table("tSQLSVN_Version")]
     public class tSQLSVNVersion
     {
-        public int Id { get; set; }
+        [Key]
+        public Guid Code { get; set; }
         public int VerNumber { get; set; }
     }
 }

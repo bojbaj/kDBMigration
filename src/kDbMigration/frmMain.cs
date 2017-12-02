@@ -15,7 +15,7 @@ namespace kDbMigration
     public partial class frmMain : Form
     {
         dbFactory db = new dbFactory();
-        int projectId = 0;
+        Guid projectCode = Guid.Empty;
         public frmMain()
         {
             InitializeComponent();
@@ -23,12 +23,12 @@ namespace kDbMigration
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-            if (projectId == 0)
+            if (projectCode == Guid.Empty)
             {
                 frmSelectProject frmPopup = new frmSelectProject();
                 frmPopup.ShowDialog();
-                projectId = frmPopup.projectId;
-                if (projectId == 0)
+                projectCode = frmPopup.projectCode;
+                if (projectCode == Guid.Empty)
                     Application.Exit();
                 else
                     bindInfo();
@@ -37,13 +37,13 @@ namespace kDbMigration
 
         private void bindInfo()
         {
-            tProject project = db.Get<tProject>(projectId);
-            bindScripts(projectId);
+            tProject project = db.Get<tProject>(projectCode);
+            bindScripts(projectCode);
         }
 
-        private void bindScripts(int projectId)
+        private void bindScripts(Guid projectId)
         {
-            int lastId = (db.GetAll<tScript>().Where(x => x.tProjectId == projectId).OrderByDescending(x => x.scriptId).FirstOrDefault()?.scriptId ?? 0);
+            int lastId = (db.GetAll<tScript>().Where(x => x.tProjectCode == projectId).OrderByDescending(x => x.scriptId).FirstOrDefault()?.scriptId ?? 0);
             txtScriptId.Text = (lastId + 1).ToString();
             txtScript.Text = string.Empty;
         }
@@ -52,10 +52,10 @@ namespace kDbMigration
         {
             string sql = txtScript.Text.Trim();
             int scriptId = txtScriptId.Text.ToType<int>(0);
-            tScript script = db.GetAll<tScript>().FirstOrDefault(x => x.tProjectId == projectId && x.scriptId == scriptId);
+            tScript script = db.GetAll<tScript>().FirstOrDefault(x => x.tProjectCode == projectCode && x.scriptId == scriptId);
             if (script is null)
             {
-                script = new tScript() { sql = sql, tProjectId = projectId, scriptId = scriptId };
+                script = new tScript() { sql = sql, tProjectCode = projectCode, scriptId = scriptId };
                 db.Insert(script);
             }
             else
@@ -63,13 +63,13 @@ namespace kDbMigration
                 script.sql = sql;
                 db.Update(script);
             }
-            bindScripts(projectId);
+            bindScripts(projectCode);
         }
 
         private void txtScriptId_TextChanged(object sender, EventArgs e)
         {
             int scriptId = txtScriptId.Text.ToType<int>(0);
-            tScript script = db.GetAll<tScript>().FirstOrDefault(x => x.tProjectId == projectId && x.scriptId == scriptId);
+            tScript script = db.GetAll<tScript>().FirstOrDefault(x => x.tProjectCode == projectCode && x.scriptId == scriptId);
             string sql = script?.sql ?? string.Empty;
             txtScript.Text = sql;
             btnDeleteScript.Enabled = script != null;
@@ -100,9 +100,9 @@ namespace kDbMigration
         {
             frmSelectProject frmPopup = new frmSelectProject();
             frmPopup.ShowDialog();
-            if (frmPopup.projectId != 0)
+            if (frmPopup.projectCode != Guid.Empty)
             {
-                projectId = frmPopup.projectId;
+                projectCode = frmPopup.projectCode;
                 bindInfo();
             }
         }
@@ -111,13 +111,13 @@ namespace kDbMigration
         {
             string sql = string.Format("--DELETED SCRIPT");
             int scriptId = txtScriptId.Text.ToType<int>(0);
-            tScript script = db.GetAll<tScript>().FirstOrDefault(x => x.tProjectId == projectId && x.scriptId == scriptId);
+            tScript script = db.GetAll<tScript>().FirstOrDefault(x => x.tProjectCode == projectCode && x.scriptId == scriptId);
             if (script != null)
             {
                 script.sql = sql;
                 db.Update(script);
             }
-            bindScripts(projectId);
+            bindScripts(projectCode);
         }
 
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
@@ -128,10 +128,10 @@ namespace kDbMigration
                 string fileName = saveFileDialog1.FileName;
 
                 List<string> sqlScripts = new List<string>() { };
-                List<tScript> scripts = db.GetAll<tScript>().Where(x => x.tProjectId == projectId).OrderBy(x => x.scriptId).ToList();
+                List<tScript> scripts = db.GetAll<tScript>().Where(x => x.tProjectCode == projectCode).OrderBy(x => x.scriptId).ToList();
                 foreach (tScript script in scripts)
                 {
-                    sqlScripts.Add(string.Format("\nINSERT INTO [tScript] ([scriptId], [sql], [tProjectId]) VALUES({0}, '{1}', {2});", script.scriptId, dbFactoryStatic.escapeQuery(script.sql), script.tProjectId));
+                    sqlScripts.Add(string.Format("\nINSERT INTO [tScript] ([scriptId], [sql], [tProjectCode]) VALUES({0}, '{1}', '{2}');", script.scriptId, dbFactoryStatic.escapeQuery(script.sql), script.tProjectCode));
                 }
                 bool exportResult = db.exportFile(sqlScripts, fileName);
                 if (exportResult)
