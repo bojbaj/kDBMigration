@@ -5,3 +5,4 @@ kDbMigration is a MSSQL database versioning tool.
 - [x] history for repair connections
 - [	] add a form to create new project
 - [	] check project code exists on destination database
+- [	] change project id to uniqueidentifier
