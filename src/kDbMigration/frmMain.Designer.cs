@@ -39,9 +39,9 @@
             this.changeProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnDeleteScript = new System.Windows.Forms.Button();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnDeleteScript = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.groupBox2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -135,16 +135,6 @@
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
-            // btnDeleteScript
-            // 
-            this.btnDeleteScript.Location = new System.Drawing.Point(567, 39);
-            this.btnDeleteScript.Name = "btnDeleteScript";
-            this.btnDeleteScript.Size = new System.Drawing.Size(66, 26);
-            this.btnDeleteScript.TabIndex = 9;
-            this.btnDeleteScript.Text = "Delete";
-            this.btnDeleteScript.UseVisualStyleBackColor = true;
-            this.btnDeleteScript.Click += new System.EventHandler(this.btnDeleteScript_Click);
-            // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -156,14 +146,24 @@
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.exportToolStripMenuItem.Text = "Export";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
+            // 
+            // btnDeleteScript
+            // 
+            this.btnDeleteScript.Location = new System.Drawing.Point(567, 39);
+            this.btnDeleteScript.Name = "btnDeleteScript";
+            this.btnDeleteScript.Size = new System.Drawing.Size(66, 26);
+            this.btnDeleteScript.TabIndex = 9;
+            this.btnDeleteScript.Text = "Delete";
+            this.btnDeleteScript.UseVisualStyleBackColor = true;
+            this.btnDeleteScript.Click += new System.EventHandler(this.btnDeleteScript_Click);
             // 
             // saveFileDialog1
             // 
             this.saveFileDialog1.DefaultExt = "mdb";
-            this.saveFileDialog1.FileName = "kDbMigration";
+            this.saveFileDialog1.Filter = "Database|*.mdb";
             // 
             // frmMain
             // 

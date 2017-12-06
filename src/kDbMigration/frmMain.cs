@@ -122,6 +122,8 @@ namespace kDbMigration
 
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            tProject project = db.Get<tProject>(projectCode);
+            saveFileDialog1.FileName = string.Format("{0}.mdb", project.ProjectName);
             DialogResult dlgResult = saveFileDialog1.ShowDialog();
             if (dlgResult == DialogResult.OK)
             {
